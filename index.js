@@ -24,6 +24,8 @@ db.connect((err) => {
 });
 */
 
+// second commit test 
+
 global.db = db;
 
 app.use(express.static(__dirname + '/public'));
