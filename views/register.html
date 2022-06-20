@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Register</title>
+  
+<style>
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #e6e619;
+}
+
+li {
+  float: left;
+  border-right:1px solid black;
+}
+
+li:last-child {
+  border-right: none;
+}
+
+li a {
+  display: block;
+  color: black;
+  font-weight: bold;
+  text-align: center;
+  padding: 18px 12px;
+}
+
+li a:hover:not(.active) {
+  background-color: #6495ED;
+}
+
+.active {
+  background-color: #00bfff;
+}
+</style>
+</head>
+<body>
+
+
+<ul>
+  <li><a href="./">Home</a></li>
+  <li><a class="active" href='/register'>Register</a></li>
+  <li><a href='/login'>Login</a></li>
+  <li><a href='/addfood'>Add Food</a></li>
+  <li><a href='/list'>Food List</a></li>
+  <li><a href='/search'>Search food</a></li>
+  <li><a href='/updatefood'>Update Food</a></li>
+  <li><a href='/deletefood'>Delete Food</a></li>
+  <li><a href='/addrecipe'>Make Recipe</a></li>
+  <li><a href='/logout'>Logout</a></li>
+  <li><a href='/api'>Api</a></li>
+  <li><a href='/about'>About</a></li>
+</ul>
+
+
+
+<h1 style="background-color:powderblue;"> This is Register Page </h1>
+        <p style="font-family:courier;">Please fill this form to register</p>
+        <p style="font-family:courier;font-size:15px;">*Remember all fileds must be filled in order to succesfully register a new user*</p>
+        <p style="font-family:courier;font-size:15px;">*If you leave any field empty you won't get registerd *</p>
+
+
+<form method="POST" action="/registered">
+  <p><strong>Username: </strong>(min. 5 charachther) <input id="username" type="text" name="username" value="username" /></h4>
+  <p><strong>Password: </strong>(min. 8 charachther) <input id="password" type="text" name="password" value="password" /></p>
+  <h4>Email: <input id="email" type="text" name="email" value="email" /></h4> 
+  <h4>First name: <input id="firstname" type="text" name="firstname" value="firstname" /></h4>
+  <h4>Last name: <input id="lastname" type="text" name="lastname" value="lastname" /></h4>
+ <input type="submit" value="Submit" />
+
+</form>
+
+
+
+ </body>
+</html>

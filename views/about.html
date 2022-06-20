@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+  <head>
+    <title>About</title>
+<style>
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #e6e619;
+}
+
+li {
+  float: left;
+  border-right:1px solid black;
+}
+
+li:last-child {
+  border-right: none;
+}
+
+li a {
+  display: block;
+  color: black;
+  font-weight: bold;
+  text-align: center;
+  padding: 18px 12px;
+}
+
+li a:hover:not(.active) {
+  background-color: #6495ED;
+}
+
+.active {
+  background-color: #00bfff;
+}
+</style>
+</head>
+<body>
+
+
+<ul>
+  <li><a href="./">Home</a></li>
+  <li><a href='/register'>Register</a></li>
+  <li><a href='/login'>Login</a></li>
+  <li><a href='/addfood'>Add Food</a></li>
+  <li><a href='/list'>Food List</a></li>
+  <li><a href='/search'>Search food</a></li>
+  <li><a href='/updatefood'>Update Food</a></li>
+  <li><a href='/deletefood'>Delete Food</a></li>
+  <li><a href='/addrecipe'>Make Recipe</a></li>
+  <li><a href='/logout'>Logout</a></li>
+  <li><a href='/api'>Api</a></li>
+  <li><a class="active" href='/about'>About</a></li>
+</ul>
+
+	<h1 style="background-color:powderblue;">Welcome to about page</h1>
+
+	<p style="font-family:courier;"> This dynamic web application is a node js app and uses mongo db to strore its databases
+<br/ >This dynamic web application has been developed by: Renzo Moises Cevallos, usrn: rpigu001 </p>
+</body>
+
+</html>
