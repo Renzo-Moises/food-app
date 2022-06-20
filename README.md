@@ -112,11 +112,3 @@ Each food added must have a valid value for each field.
 ‘users’ collection is used to store the new users registered.
 It has 5 fields: username, password, email, firstname and lastname.
 Each user registered must have a valid value for each field.
-
-
-
-
-# Diet-app
-# Diet-app
-# Diet-app
-# Food-databse
