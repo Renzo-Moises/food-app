@@ -6,27 +6,8 @@ var validator = require ('express-validator');
 const expressSanitizer = require('express-sanitizer');
 const app = express()
 const port = 8000
-const mysql = require('mysql');
-const db = mysql.createConnection ({
-    host: 'localhost',
-    user: 'root',
-    password: 'Ambition974!',
-    database: 'myBookshop'
-});
 
-/* 
-// connect to database
-db.connect((err) => {
-    if (err) {
-        throw err;
-    }
-    console.log('Connected to database');
-});
-*/
 
-// second commit test 
-
-global.db = db;
 
 app.use(express.static(__dirname + '/public'));
 
