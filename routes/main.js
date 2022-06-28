@@ -4,6 +4,7 @@ module.exports = function(app)
 
 //Login required to access certain pages
   const { check, validationResult } = require('express-validator');
+  const { MongoClient } = require("mongodb");
 
    const redirectLogin = (req, res, next) => {
    if (!req.session.userId ) {
@@ -11,14 +12,11 @@ module.exports = function(app)
    } else { next (); }
    }
 
-
-
 //Homepage route
      app.get('/',function(req,res){
-        res.render('index.html')
+        res.render('index.html');
+	console.log("test linea");
      });
-
-
 
 
 //About route
@@ -27,14 +25,13 @@ module.exports = function(app)
     });
 
 
-
-
-/* Search food route */
+// Search food route
     app.get('/search', function(req,res){
          res.render("search.html");
      });
   app.get('/search-result', function (req, res) {    	          
 
+/*
 //Connect to database with mongo db
       var keyword = req.query.keyword;
       var MongoClient = require('mongodb').MongoClient;
@@ -42,8 +39,17 @@ module.exports = function(app)
       MongoClient.connect(url, function (err, client) {
       if (err) throw err;
       var db = client.db('mycaloriesapp');
-	
-	db.collection('food').findOne( {name: {$regex: keyword, $options:'i'}}, function(findErr, results) {
+*/
+
+	var keyword = req.query.keyword;
+	var url = "mongodb+srv://Admin-RM:mongopassrmadmin@project1.6dzot.mongodb.net/testlistdb";
+	const instance = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
+	instance.connect((err, client) => {
+  	if (err) console.log('failed to connect')
+  	else {
+        const database = client.db('mycaloriesapp');
+
+	database.collection('food').findOne( {name: {$regex: keyword, $options:'i'}}, function(findErr, results) {
 
 	if (findErr) throw findErr;
 //If food does not exit display send error message       
@@ -53,28 +59,28 @@ module.exports = function(app)
 	} 
 //else if keyword matches food display matched food
 	else{
- 	db.collection('food').find({ name: {$regex: keyword, $options:'i'}  }).toArray((findErr, results) => {
+ 	database.collection('food').find({ name: {$regex: keyword, $options:'i'}  }).toArray((findErr, results) => {
         if (findErr) throw findErr;
 	else
 	res.render('list3.ejs', {availablefood:results});
-	client.close();
+	//client.close();
+	});        
+	}});
+     }});
 });
-        
-}});
-        });
-});
 
 
 
 
 
-/* Update food route */
+// Update food route 
   app.get('/updatefood', redirectLogin, function (req,res) {
          res.render('updatefood.html');
       });
           
   app.post('/updated', function (req,res) {
 
+/*
         // saving data in database
         //Connect to database with mongo db
        var MongoClient = require('mongodb').MongoClient;
@@ -82,41 +88,49 @@ module.exports = function(app)
 	//const field = req.body.updatefield;
        MongoClient.connect(url, function(err, client) {
         if (err) throw err;
-        var field = req.body.updatefield;
-	var db = client.db ('mycaloriesapp');
+*/
+	var url = "mongodb+srv://Admin-RM:mongopassrmadmin@project1.6dzot.mongodb.net/testlistdb";
+	const instance = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
+	instance.connect((err, client) => {
+ 	  if (err) console.log('failed to connect')
+  	  else {
+
+		var field = req.body.updatefield;
+        	const database = client.db('mycaloriesapp');
+        	//database.collection('users').findOne( {username: req.body.username }, function(findErr, results) {
+        	//if (findErr) throw findErr;
        
-	db.collection('food').findOne({name: req.body.name}, function(err, result){
-	if (err) throw err;
-//If food name not found display error message
-        if (!result){
-        res.send('Sorry, the food name does not exist, please check and try again.'  + '<br />' + 'Try to update again?: '+
-	 '<a href='+'/updatefood'+'>Update</a>' + '<br />'+ 'Go back home?'+'<a href='+'./'+'>Home</a>');
-        } 
+		database.collection('food').findOne({name: req.body.name}, function(err, result){
+		if (err) throw err;
+		//If food name not found display error message
+        	if (!result){
+        	res.send('Sorry, the food name does not exist, please check and try again.'  + '<br />' + 'Try to update again?: '+
+		 '<a href='+'/updatefood'+'>Update</a>' + '<br />'+ 'Go back home?'+'<a href='+'./'+'>Home</a>');
+        	} 
 	
-	if (result.author != req.session.userId){
-	res.send('Sorry, you can only update the items you have added, please check and try again.'  + '<br />' + 'Try to update again?: '+
-	'<a href='+'/updatefood'+'>Update</a>' + '<br />'+ 'Go back home?'+'<a href='+'./'+'>Home</a>');
-	}
+		if (result.author != req.session.userId){
+		res.send('Sorry, you can only update the items you have added, please check and try again.'  + '<br />' + 'Try to update again?: '+
+		'<a href='+'/updatefood'+'>Update</a>' + '<br />'+ 'Go back home?'+'<a href='+'./'+'>Home</a>');
+		}
 	
-//else if name is found, update food
-	else{
+		//else if name is found, update food
+		else{
 	
-	db.collection('food').updateOne({name: req.body.name},{
-        $set: {[field]: req.body.updatevalue}})
+		database.collection('food').updateOne({name: req.body.name},{
+        	$set: {[field]: req.body.updatevalue}})
         
-        client.close();
-        res.send('The food: ' +req.body.name+ ' has been updated. The updated field is: '+ req.body.updatefield+ ', its  new value is: '+req.body.updatevalue+
-	'<br />' + 'Want to update something else?: '+ '<a href='+'/updatefood'+'>Keep updating</a>' + '<br />'+ 'Go back home?'+'<a href='+'./'+'>Home</a>');
-       
-	 }});
+       		client.close();
+        	res.send('The food: ' +req.body.name+ ' has been updated. The updated field is: '+ req.body.updatefield+ ', its  new value is: '+req.body.updatevalue+
+		'<br />' + 'Want to update something else?: '+ '<a href='+'/updatefood'+'>Keep updating</a>' + '<br />'+ 'Go back home?'+'<a href='+'./'+'>Home</a>');
+		 }});
+	  }});
 });
-       });
 
 
 
 
 
-/* Register route */		
+// Register route 		
   app.get('/register', function (req,res) {
          res.render('register.html');                                                                     
       });
@@ -130,74 +144,87 @@ module.exports = function(app)
 	  + '<br />' + 'Want to try again?: '+ '<a href='+'/register'+'>Register</a>'+'<br />'+'Go back home?'+
 	'<a href='+'./'+'>Home</a>'); }
 
-
 //	res.redirect('./register'); }
        else {
-
-
-        var MongoClient = require('mongodb').MongoClient;
-        var url = 'mongodb://localhost';
- 
-        MongoClient.connect(url, function(err, client) {
-         if (err) throw err;
-         var db = client.db ('mycaloriesapp');
- 
-        db.collection('users').findOne( {username: req.body.username }, function(findErr, results) {
- 
-         if (findErr) throw findErr;
+     //   var MongoClient = require('mongodb').MongoClient;
+       // var url = 'mongodb://localhost';
+       // MongoClient.connect(url, function(err, client) {
+        // if (err) throw err;
+        // var db = client.db ('mycaloriesapp');
+       // db.collection('users').findOne( {username: req.body.username }, function(findErr, results) { 
+        // if (findErr) throw findErr;
  //If food name is take display send error message       
-         if (results){
-         res.send('Sorry, the username is already in use, please try with a different word again.'  + '<br />' +
-         'Want to try again?: '+ '<a href='+'/register'+'>Register </a>'+'<br />'+'Go back home?: '+'<a href='+'./'+'>Home</a>');
-         }
+         //if (results){
+        // res.send('Sorry, the username is already in use, please try with a different word again.'  + '<br />' +
+         //'Want to try again?: '+ '<a href='+'/register'+'>Register </a>'+'<br />'+'Go back home?: '+'<a href='+'./'+'>Home</a>');
+        // }
 
-	else{
+
+        var url = "mongodb+srv://Admin-RM:mongopassrmadmin@project1.6dzot.mongodb.net/testlistdb";
+        const instance = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true }); 
+        instance.connect((err, client) => {
+          if (err) console.log('failed to connect')
+          else {
+                const database = client.db('mycaloriesapp');
+    
+                database.collection('users').findOne( {username: req.body.username }, function(findErr, results) {
+		if (findErr) throw findErr;
+                else
+		//If food name is take display send error message       
+         	if (results){
+         	res.send('Sorry, the username is already in use, please try with a different word again.'  + '<br />' +
+         	'Want to try again?: '+ '<a href='+'/register'+'>Register </a>'+'<br />'+'Go back home?: '+'<a href='+'./'+'>Home</a>');
+         	}
+
+		else{
 
 	 
-	const bcrypt = require('bcrypt');
-	const saltRounds = 10;
-//Sanatize and store password as plainPassword
-	const plainPassword = req.sanitize(req.body.password);
+		const bcrypt = require('bcrypt');
+		const saltRounds = 10;
+	//Sanatize and store password as plainPassword
+		const plainPassword = req.sanitize(req.body.password);
 
-//Connect to database with mongo db
-      // var MongoClient = require('mongodb').MongoClient;
-      // var url = 'mongodb://localhost';
+	//Connect to database with mongo db
+      	// var MongoClient = require('mongodb').MongoClient;
+      	// var url = 'mongodb://localhost';
  	
-	//Hash password
-       bcrypt.hash(plainPassword, saltRounds, function(err, hashedPassword) {
-        // Store hashed password in your database.
+		//Hash password
+       		bcrypt.hash(plainPassword, saltRounds, function(err, hashedPassword) {
+        	// Store hashed password in your database.
                                                                                                             
-      // MongoClient.connect(url, function(err, client) {
-       // if (err) throw err;
-       // var db = client.db ('mycaloriesapp');  
+      		// MongoClient.connect(url, function(err, client) {
+       		// if (err) throw err;
+       		// var db = client.db ('mycaloriesapp');  
         
-	db.collection('users').insertOne({
-        username: req.body.username,
-        password: hashedPassword,
-	email: req.body.email,                                    
-	firstname: req.body.firstname,
-	lastname: req.body.lastname                                                             
-        });
+		database.collection('users').insertOne({
+        	username: req.body.username,
+        	password: hashedPassword,
+		email: req.body.email,                                    
+		firstname: req.body.firstname,
+		lastname: req.body.lastname                                                             
+       	 	});
 	
-	client.close();
+		//client.close();
 
-        res.send( 'Hey, ' + req.body.firstname + ' '+ req.body.lastname + 
-	', You are now registered. ' + 'Your username is '+ req.body.username + 
-	', your email is ' + req.body.email + '<br />'+ 'Your password is '+ req.body.password + 
-	'<br />'+'<a href='+'./'+'>Home</a>');
-        });
-     }});
-    });
+        	res.send( 'Hey, ' + req.body.firstname + ' '+ req.body.lastname + 
+		', You are now registered. ' + 'Your username is '+ req.body.username + 
+		', your email is ' + req.body.email + '<br />'+ 'Your password is '+ req.body.password + 
+		'<br />'+'<a href='+'./'+'>Home</a>');
+        	});
+    	 }});
+    	}});
    }});
 
 
 
 
 
-/* Food List (mongodb) route */
+// Food List (mongodb) route 
  app.get('/list', function(req, res) {
      //Connect to database with mongo db
-      var MongoClient = require('mongodb').MongoClient;
+      
+	/*
+	var MongoClient = require('mongodb').MongoClient;
       var url = 'mongodb://localhost';
       MongoClient.connect(url, function (err, client) {
       if (err) throw err;
@@ -207,18 +234,53 @@ module.exports = function(app)
       else
        res.render('list.ejs', {availablefood:results});
     client.close();
-  	});
-	});
+	*/
+
+
+
+	var url = "mongodb+srv://Admin-RM:mongopassrmadmin@project1.6dzot.mongodb.net/testlistdb";
+	const instance = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
+	instance.connect((err, client) => {
+ 	  if (err) console.log('failed to connect')
+  	  else {
+        	const database = client.db('mycaloriesapp');
+       		
+       		database.collection('food').find().sort({name: 1}).toArray((findErr, results) => {	
+		if (findErr) throw findErr;
+		else
+		res.render('list.ejs', {availablefood:results});
+  		});
+	  }});
    });
 
 
+/*
+const client = new MongoClient(url);
 
+async function run() {
+  try {
+    await client.connect();
+    const database = client.db('mycaloriesapp');
+    const users = database.collection('users');
+    // Query for a movie that has the title 'Back to the Future'
+    const query = { username: 'jgloo011' };
+    const user = await users.findOne(query);
+    console.log(user);
+  } finally {
+    // Ensures that the client will close when you finish/error
+    await client.close();
+  }
+}
 
+//run().catch(console.dir);
+run();
+*/
 
-/* Add food route */
-  app.get('/addfood', redirectLogin, function (req,res) {
-         res.render('addfood.html');                                             
-      });
+// Add food route 
+ // app.get('/addfood', redirectLogin, function (req,res) {
+	app.get('/addfood', redirectLogin, function (req,res) {
+      	res.render('addfood.html');                                             
+      	});
 
   app.post('/foodadded',[check('name').notEmpty()], [check('value').notEmpty()], [check('typValue').notEmpty()], 
   [check('calories').isDecimal()],[check('carbs').isDecimal()], [check('fat').isDecimal()], [check('protein').isDecimal()], 
@@ -232,7 +294,68 @@ module.exports = function(app)
         '<a href='+'./'+'>Home</a>'); }
 
        	else {
-	   
+
+	var url = "mongodb+srv://Admin-RM:mongopassrmadmin@project1.6dzot.mongodb.net/testlistdb";
+	const instance = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true }); 
+	// notice 'client' in the callback
+	instance.connect((err, client) => {
+  	  if (err) console.log('failed to connect')
+  	  else {
+		const database = client.db('mycaloriesapp');
+		database.collection('food').findOne( {name: req.body.name }, function(findErr, results) {
+
+		if (findErr) throw findErr;
+		//If food name is take display send error message   
+		
+		if (results){
+		console.log("name taken already");
+		res.send('Sorry, the name is already in use, please try with a different word again.'  + '<br />' + 'Want to try again?: '+ '<a href='+'/addfood'+'>Add food</a>'+'<br />'+'Go back home?: '+'<a href='+'./'+'>Home</a>');
+		}
+
+		else{
+
+    		console.log('connected to mongodb')
+    		//const database = client.db('mycaloriesapp');
+    		database.collection('food').insertOne({
+		name: req.body.name,
+		value: req.body.value,
+		typValue: req.body.typValue,
+		calories: req.body.calories,  
+		carbs: req.body.carbs,
+		fat: req.body.fat,
+		protein: req.body.protein,
+		salt: req.body.salt,  
+		sugar: req.body.sugar,
+		author: req.session.userId
+		});
+		
+		//database.collection('users').findOne({ username: 'jgloo011' }).then(function(users){
+    		//console.log(users);
+    		//}); 
+
+		res.send(' The following food has been added to the database, name: '+"'"+ req.body.name +"'"+
+        	 ',  typical values per '+"'"+  req.body.value + "'" + ',  unit of typical value: '+ "'"+ req.body.typValue +"'"+ 
+        	 ',  calories: '+ "'"+ req.body.calories +"'"+  ' kilocalories' +"'"+ ',  carbs: '+"'"+ req.body.carbs+"'g"+
+        	 ',  fat: '+"'"+ req.body.fat+"'" + ', protein: '+"'"+ req.body.protein+"'g"+  ',  salt: ' +"'"+ req.body.salt+"'g"+
+        	 ',  sugar: '+"'" +req.body.sugar+"'g"+  
+        	 '<br />' + 'Want to keep adding food?: '+ '<a href='+'/addfood'+'>Keep adding</a>' +
+        	 '<br />'+ 'Go back home?: '+'<a href='+'./'+'>Home</a>')
+        	}});
+	}});
+}});
+       
+
+
+	//const client = new MongoClient(url);
+	//client.connect();
+	//var url = "mongodb+srv://Admin-RM:mongopassrmadmin@project1.6dzot.mongodb.net/testlistdb";
+	//var database = client.db('mycaloriesapp');
+	//const food = database.collection('food');
+	//var query = { name: req.body.name };
+	
+	//database.collection('food').findOne( {name: req.body.name }, function(findErr, results) {
+
+	   /*
  	// saving data in database
 	//Connect to database with mongo db
        var MongoClient = require('mongodb').MongoClient;
@@ -244,6 +367,8 @@ module.exports = function(app)
   
 	db.collection('food').findOne( {name: req.body.name }, function(findErr, results) {
 
+
+
         if (findErr) throw findErr;
 //If food name is take display send error message       
         if (results){
@@ -253,7 +378,7 @@ module.exports = function(app)
 //else if name is free display matched food
         else{
 
-	db.collection('food').insertOne({
+	database.collection('food').insertOne({
         name: req.body.name,
         value: req.body.value,
         typValue: req.body.typValue,
@@ -266,7 +391,7 @@ module.exports = function(app)
 	author: req.session.userId	
                                                                                                  
         });
-        client.close();
+//        client.close();
         res.send(' The following food has been added to the database, name: '+"'"+ req.body.name +"'"+
 	 ',  typical values per '+"'"+  req.body.value + "'" + ',  unit of typical value: '+ "'"+ req.body.typValue +"'"+ 
  	 ',  calories: '+ "'"+ req.body.calories +"'"+  ' kilocalories' +"'"+ ',  carbs: '+"'"+ req.body.carbs+"'g"+
@@ -275,14 +400,14 @@ module.exports = function(app)
  	 '<br />' + 'Want to keep adding food?: '+ '<a href='+'/addfood'+'>Keep adding</a>' +
 	 '<br />'+ 'Go back home?: '+'<a href='+'./'+'>Home</a>')
 	}});
-        })};
-       });
+        }});
+      // });
+
+*/
 
 
 
-
-
-/* Add recipe route */
+/* Add recipe route 
   app.get('/addrecipe', function (req,res) {
          res.render('addrecipe.html');
       });
@@ -309,10 +434,11 @@ module.exports = function(app)
 
 
 
-
-/* List users route */
-app.get('/listusers', redirectLogin, function(req, res) {
-     //Connect to database with mongo db
+/*
+//List users route 
+app.get('/listusers', function(req, res) {
+     
+	//Connect to database with mongo db
       var MongoClient = require('mongodb').MongoClient;
       var url = 'mongodb://localhost';
       MongoClient.connect(url, function (err, client) {
@@ -323,15 +449,29 @@ app.get('/listusers', redirectLogin, function(req, res) {
       else
          res.render('listusers.html', {availableusers:results});
       client.close();
-        });
+      
+
+	var url = "mongodb+srv://Admin-RM:mongopassrmadmin@project1.6dzot.mongodb.net/testlistdb";
+	const instance = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
+	
+	instance.connect((err, client) => {
+ 	  if (err) console.log('failed to connect')
+  	  else {
+        	const database = client.db('mycaloriesapp');
+		db.collection('users').find().toArray((findErr, results) => {        	
+        	if (findErr) throw findErr;
+		else
+		res.render('listusers.html', {availableusers:results});
+			});
+		};
         });
 });
 
+*/
 
 
 
-
-/* Login route */
+// Login route 
 app.get('/login', function(req, res) {
 res.render('login.html')
 });
@@ -339,92 +479,123 @@ res.render('login.html')
 app.post('/loggedin', function(req, res) {
        const bcrypt = require('bcrypt');
      //Connect to database with mongo db
-	var MongoClient = require('mongodb').MongoClient;
+/*	var MongoClient = require('mongodb').MongoClient;
      	var url = 'mongodb://localhost';
       	MongoClient.connect(url, function (err, client) {
       	if (err) throw err;
       	var db = client.db('mycaloriesapp');
-
-//Find username	
-	db.collection('users').findOne({username: req.body.username}, function(err, result)	{
-	if (err) throw err;
-//If username not found display error message
-	if (!result){
-        res.send('Sorry, the username does not exist, please check and try again.' + '<br />' + 'Want to try to log in again?: '+   
-        '<a href='+'/login'+'>Try again</a>' + '<br />'+ 'Go back home?: '+'<a href='+'./'+'>Home</a>');
-	}	
-	else {
-	hashedPassword = result.password;
-	plainPassword = req.body.password;
-//Compare stored hashed password with password input
-	bcrypt.compare(plainPassword, hashedPassword, function(err, result) {
-	if (err) throw err;
-//Display the mseaage if login is succesful or not
-	if (result == true)
-	{ 
-// **** save user session here, when login is successful
-	req.session.userId = req.body.username;    
-//	console.log(db.users.find({}, {ObjectId:1}));
-	res.send('You have succesfully logged in, Welcome ' + req.body.username +  '<br />'+'<a href='+'./'+'>Home</a>');
-	}	
-	else
-        res.send('Sorry, the password is incorrect, please try again.'  + '<br />' + 'Want to try to log in again?: '+ 
-	'<a href='+'/login'+'>Try again</a>' + '<br />'+ 'Go back home?: '+'<a href='+'./'+'>Home</a>');
+ */
+	var url = "mongodb+srv://Admin-RM:mongopassrmadmin@project1.6dzot.mongodb.net/testlistdb";
+	const instance = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
+	// notice 'client' in the callback
+	instance.connect((err, client) => {
+  		if (err) console.log('failed to connect')
+  		else {
+        	const database = client.db('mycaloriesapp');
+		//Find username	
+		database.collection('users').findOne({username: req.body.username}, function(err, result)	{
+			if (err) throw err;
+			//If username not found display error message
+			if (!result){
+        		res.send('Sorry, the username does not exist, please check and try again.' + '<br />' + 'Want to try to log in again?: '+   
+        		'<a href='+'/login'+'>Try again</a>' + '<br />'+ 'Go back home?: '+'<a href='+'./'+'>Home</a>');
+			}	
+			else {
+			hashedPassword = result.password;
+			plainPassword = req.body.password;
+			//Compare stored hashed password with password input
+			bcrypt.compare(plainPassword, hashedPassword, function(err, result) {
+			if (err) throw err;
+			//Display the mseaage if login is succesful or not
+			if (result == true)
+			{ 
+			// **** save user session here, when login is successful
+			req.session.userId = req.body.username;    
+			//console.log(db.users.find({}, {ObjectId:1}));
+			res.send('You have succesfully logged in, Welcome ' + req.body.username +  '<br />'+'<a href='+'./'+'>Home</a>');
+			}	
+			else
+        		res.send('Sorry, the password is incorrect, please try again.'  + '<br />' + 'Want to try to log in again?: '+ 
+			'<a href='+'/login'+'>Try again</a>' + '<br />'+ 'Go back home?: '+'<a href='+'./'+'>Home</a>');
 	
-	client.close();
-	});
-}});	
-	});
+			//client.close();
+			});
+			}});	
+	}});
 });
 
 
-
-
-/* Delete food route */
+// Delete food route
 app.get('/deletefood', redirectLogin, function(req, res) {
 res.render('deletefood.html')
 });
 
 app.post('/fooddeleted', function(req, res) {
 
+/*
      //Connect to database with mongo db	
 	var MongoClient = require('mongodb').MongoClient;
         var url = 'mongodb://localhost';
         MongoClient.connect(url, function (err, client) {
         if (err) throw err;
         var db = client.db('mycaloriesapp');
+*/
 
-        db.collection('food').findOne({name: req.body.name}, function(err, result){
-        if (err) throw err;
-//If food name not found display error message
-        if (!result){
-        res.send('Sorry, we could not match your name provided with any food name, please check and try again.'  + '<br />' + 
-	'Want to try again?: '+ '<a href='+'/deletefood'+'>Delete again</a>' + '<br />'+ 'Go back home?'+'<a href='+'./'+'>Home</a>');
-        }
+ 
+	var url = "mongodb+srv://Admin-RM:mongopassrmadmin@project1.6dzot.mongodb.net/testlistdb";
+	const instance = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
+	// notice 'client' in the callback
+	instance.connect((err, client) => {
+        if (err) console.log('failed to connect')
+        else {
+        const database = client.db('mycaloriesapp');
+        database.collection('food').findOne({name: req.body.name}, function(err, result){
+        	if (err) throw err;
+		//If food name not found display error message
+        	if (!result){
+        	res.send('Sorry, we could not match your name provided with any food name, please check and try again.'  + '<br />' + 
+		'Want to try again?: '+ '<a href='+'/deletefood'+'>Delete again</a>' + '<br />'+ 'Go back home?'+'<a href='+'./'+'>Home</a>');
+        	}
 
-        if (result.author != req.session.userId){
-        res.send('Sorry, you can only delete the items you have added, please check and try again.'  + '<br />' + 'Try to delete again?: '+
-        '<a href='+'/deletefood'+'>Delete</a>' + '<br />'+ 'Go back home?'+'<a href='+'./'+'>Home</a>');
-        }
+        	if (result.author != req.session.userId){
+        	res.send('Sorry, you can only delete the items you have added, please check and try again.'  + '<br />' + 'Try to delete again?: '+
+        	'<a href='+'/deletefood'+'>Delete</a>' + '<br />'+ 'Go back home?'+'<a href='+'./'+'>Home</a>');
+        	}
 	
-//else Delete food based on name provided
-	else{
-	db.collection('food').deleteOne({ name: req.body.name}, function(err, result){
-	if (err) throw err;
-    	else
-	res.send('The food: ' + req.body.name + ' has been deleted' + '<br />' + 'Want to delete something else?: '+ 
-	'<a href='+'/deletefood'+'>Keep deleting</a>' + '<br />'+ 'Go back home?'+'<a href='+'./'+'>Home</a>');
-	client.close();	
-});
+		//else Delete food based on name provided
+		else{
+		database.collection('food').deleteOne({ name: req.body.name}, function(err, result){
+		if (err) throw err;
+    		else
+		res.send('The food: ' + req.body.name + ' has been deleted' + '<br />' + 'Want to delete something else?: '+ 
+		'<a href='+'/deletefood'+'>Keep deleting</a>' + '<br />'+ 'Go back home?'+'<a href='+'./'+'>Home</a>');
+		//client.close();	
+		});
+		}});
 	}});
-})});
+});
+
+
+app.get('/myfood', redirectLogin, function (req,res) {
+        var url = "mongodb+srv://Admin-RM:mongopassrmadmin@project1.6dzot.mongodb.net/testlistdb";
+        const instance = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true }); 
+        instance.connect((err, client) => {
+          if (err) console.log('failed to connect')
+          else {
+                const database = client.db('mycaloriesapp');
+    
+                database.collection('food').find({author: req.session.userId}).sort({name: 1}).toArray((findErr, results) => {     
+                if (findErr) throw findErr;
+                else
+                res.render('myfood.ejs', {availablefood:results});
+                }); 
+         }});
+   }); 
 
 
 
-
-
-/* Logout route */
-  app.get('/logout', (req,res) => {
+// Logout route 
+  app.get('/logout', redirectLogin, (req,res) => {
      req.session.destroy(err => {
      if (err) {
        return res.redirect('./')
@@ -437,25 +608,34 @@ app.post('/fooddeleted', function(req, res) {
 
 
 
-/* Api route */
+// Api route 
 app.get('/api', function (req,res) {
-     //Connect to database with mongo db
+     
+/*	//Connect to database with mongo db
      var MongoClient = require('mongodb').MongoClient;
      var url = 'mongodb://localhost';
      MongoClient.connect(url, function (err, client) {
      if (err) throw err                                                                                                                                                
      var db = client.db('mycaloriesapp');
+*/
 	//Display food list	
-	
-	db.collection('food').find().toArray((findErr, results) => {                                                                                                                                
-      if (findErr) throw findErr;
-      else
-         res.json(results);
-	 
-	client.close();                                                                                                                                                   
-  });
+
+	var url = "mongodb+srv://Admin-RM:mongopassrmadmin@project1.6dzot.mongodb.net/testlistdb";
+	const instance = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
+	instance.connect((err, client) => {
+	if (err) console.log('failed to connect')
+	else {
+	const database = client.db('mycaloriesapp');
+	database.collection('food').find().toArray((findErr, results) => {
+		if (findErr) throw findErr;
+      		else
+        	res.json(results);	 
+  	});
+	}});
 });
-});
+
+
+
 
 
 
