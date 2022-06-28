@@ -4,7 +4,7 @@ README
 
 R1 Home page:
 Home page can be found in routes/index.html
-And also, in routes/main.js line 17
+And also, in routes/main.js line 17 o
 
 
 R2 About page:
