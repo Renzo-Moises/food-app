@@ -1,0 +1,83 @@
+
+<!doctype html>
+<html>
+  <head>
+    <title>Add recipe page</title>
+  
+<style>
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #e6e619;
+}
+
+li {
+  float: left;
+  border-right:1px solid black;
+}
+
+li:last-child {
+  border-right: none;
+}
+
+li a {
+  display: block;
+  color: black;
+  font-weight: bold;
+  text-align: center;
+  padding: 18px 12px;
+}
+
+li a:hover:not(.active) {
+  background-color: #6495ED;
+}
+
+.active {
+  background-color: #00bfff;
+}
+</style>
+</head>
+<body>
+
+
+<ul>
+  <li><a href="./">Home</a></li>
+  <li><a href='/register'>Register</a></li>
+  <li><a href='/login'>Login</a></li>
+  <li><a href='/addfood'>Add Food</a></li>
+  <li><a href='/list'>Food List</a></li>
+  <li><a href='/search'>Search food</a></li>
+  <li><a href='/updatefood'>Update Food</a></li>
+  <li><a href='/deletefood'>Delete Food</a></li>
+  <li><a href='/myfood'>My food</a></li>
+  <li><a class="active" href='/addrecipe'>Make Recipe</a></li>
+  <li><a href='/logout'>Logout</a></li>
+  <li><a href='/api'>Api</a></li>
+  <li><a href='/about'>About</a></li>
+</ul>
+
+
+<h1 style="background-color:powderblue;"> This is add recipe page </h1>
+        <p style="font-family:courier;">Please fill this form to add a new recipe</p>
+        <p style="font-family:courier;font-size:15px;">*Remember all fileds must be filled in order to succesfully add a new recipe*</p>
+
+<form method="POST" action="/addedrecipe">
+ <h4>Recipe name: <input id="recipename" type="text" name="recipename" value="recipe name" /></h4>
+
+
+  <h4>Item 1:<input id="item1" type="text" name="item1" value="item 1" /></h4>
+  <h4>Item 2: <input id="item2" type="text" name="item2" value="item 2" /></h4>
+  <h4>Item 3: <input id="item3" type="text" name="item3" value="item 3" /></h4>
+
+
+  <h4> Author's Name: <input id="author" type="text" name="author" value="Enter your name" /></h4>
+
+
+<input type="submit" value="Submit" />
+</form>
+
+ </body>
+</html>
+
