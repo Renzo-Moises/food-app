@@ -249,6 +249,7 @@ module.exports = function(app)
 		if (findErr) throw findErr;
 		else
 		res.render('list.ejs', {availablefood:results});
+		//res.render(results);
   		});
 	  }});
    });

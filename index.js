@@ -5,7 +5,7 @@ var validator = require ('express-validator');
 
 const expressSanitizer = require('express-sanitizer');
 const app = express()
-const port = 8000;
+const port = process.env.PORT || 8000;
 const mongoose = require("mongoose");
 const { MongoClient } = require("mongodb");
 
