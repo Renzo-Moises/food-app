@@ -96,6 +96,8 @@ module.exports = function(app)
   	  else {
 
 		var field = req.body.updatefield;
+		var field_value = req.body.updatevalue;
+
         	const database = client.db('mycaloriesapp');
         	//database.collection('users').findOne( {username: req.body.username }, function(findErr, results) {
         	//if (findErr) throw findErr;
@@ -116,8 +118,8 @@ module.exports = function(app)
 		//else if name is found, update food
 		else{
 	
-		database.collection('food').updateOne({name: req.body.name},{
-        	$set: {[field]: req.body.updatevalue}})
+		database.collection('food').updateOne({name: req.body.name},
+			{ $set: {[field]: field_value}})
         
        		client.close();
         	res.send('The food: ' +req.body.name+ ' has been updated. The updated field is: '+ req.body.updatefield+ ', its  new value is: '+req.body.updatevalue+
