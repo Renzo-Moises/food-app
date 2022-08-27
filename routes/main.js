@@ -179,7 +179,7 @@ module.exports = function(app)
 		else{
 
 	 
-		const bcrypt = require('bcrypt');
+		const bcrypt = require('bcryptjs');
 		const saltRounds = 10;
 	//Sanatize and store password as plainPassword
 		const plainPassword = req.sanitize(req.body.password);
