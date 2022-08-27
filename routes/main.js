@@ -118,8 +118,8 @@ module.exports = function(app)
 		//else if name is found, update food
 		else{
 	
-			// database.collection('food').updateOne({name: req.body.name},
-			// { $set: {[field]: field_value}})
+			database.collection('food').updateOne({name: req.body.name},
+			{ $set: { field: field_value }})
         
        		client.close();
         	res.send('The food: ' +req.body.name+ ' has been updated. The updated field is: '+ req.body.updatefield+ ', its  new value is: '+req.body.updatevalue+
