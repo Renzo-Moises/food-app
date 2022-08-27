@@ -478,7 +478,10 @@ res.render('login.html')
 });
 
 app.post('/loggedin', function(req, res) {
-       const bcrypt = require('bcrypt');
+
+	//this was just commented out
+    //    const bcrypt = require('bcrypt');
+
      //Connect to database with mongo db
 /*	var MongoClient = require('mongodb').MongoClient;
      	var url = 'mongodb://localhost';
