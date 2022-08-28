@@ -96,7 +96,7 @@ module.exports = function(app)
   	  else {
 
 		var field = req.body.updatefield;
-		var field_value = req.body.updatevalue;
+		// var field_value = req.body.updatevalue;
 
         	const database = client.db('mycaloriesapp');
         	//database.collection('users').findOne( {username: req.body.username }, function(findErr, results) {
@@ -105,12 +105,12 @@ module.exports = function(app)
 		database.collection('food').findOne({name: req.body.name}, function(err, result){
 		if (err) throw err;
 		//If food name not found display error message
-        	if (!result){
+        if (!result){
         	res.send('Sorry, the food name does not exist, please check and try again.'  + '<br />' + 'Try to update again?: '+
-		 '<a href='+'/updatefood'+'>Update</a>' + '<br />'+ 'Go back home?'+'<a href='+'./'+'>Home</a>');
-        	} 
+		 	'<a href='+'/updatefood'+'>Update</a>' + '<br />'+ 'Go back home?'+'<a href='+'./'+'>Home</a>');
+        } 
 	
-		if (result.author != req.session.userId){
+		else if (result.author != req.session.userId){
 		res.send('Sorry, you can only update the items you have added, please check and try again.'  + '<br />' + 'Try to update again?: '+
 		'<a href='+'/updatefood'+'>Update</a>' + '<br />'+ 'Go back home?'+'<a href='+'./'+'>Home</a>');
 		}
@@ -119,17 +119,23 @@ module.exports = function(app)
 		else{
 	
 			database.collection('food').updateOne({ name: req.body.name},
-			// { $set: { [field]: [field_value] }})
-			{ $set: { calories: req.body.updatevalue }})
-
-        
-       		client.close();
-        	res.send('The food: ' +req.body.name+ ' has been updated. The updated field is: '+ req.body.updatefield+ ', its  new value is: '+req.body.updatevalue+
-			'<br />' + 'Want to update something else?: '+ '<a href='+'/updatefood'+'>Keep updating</a>' + '<br />'+ 'Go back home?'+'<a href='+'./'+'>Home</a>');
+			{ $set: { [field]: req.body.updatevalue }}, (err) => {
+			// { $set: { name: "newfood3" }}, (err) => {
+				if (err) {
+				  throw err;
+				} else {
+				  console.log("Else went trough");
+				  client.close();
+				  res.send('The food: ' +req.body.name+ ' has been updated. The updated field is: '+ req.body.updatefield+ ', its  new value is: '+req.body.updatevalue+
+				  '<br />' + 'Want to update something else?: '+ '<a href='+'/updatefood'+'>Keep updating</a>' + '<br />'+ 'Go back home?'+'<a href='+'./'+'>Home</a>');
+				  console.log("All went trough");
+				};
+			});
 		 }});
-	  }});
-});
+	  };
+	});
 
+});
 
 
 
