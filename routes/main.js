@@ -188,39 +188,39 @@ module.exports = function(app)
 
 		else{
 
-	 
-		const bcrypt = require('bcryptjs');
-		const saltRounds = 10;
-	//Sanatize and store password as plainPassword
-		const plainPassword = req.sanitize(req.body.password);
+		
+			const bcrypt = require('bcryptjs');
+			const saltRounds = 10;
+		//Sanatize and store password as plainPassword
+			const plainPassword = req.sanitize(req.body.password);
 
-	//Connect to database with mongo db
-      	// var MongoClient = require('mongodb').MongoClient;
-      	// var url = 'mongodb://localhost';
- 	
-		//Hash password
-       		bcrypt.hash(plainPassword, saltRounds, function(err, hashedPassword) {
-        	// Store hashed password in your database.
-                                                                                                            
-      		// MongoClient.connect(url, function(err, client) {
-       		// if (err) throw err;
-       		// var db = client.db ('mycaloriesapp');  
-        
-		database.collection('users').insertOne({
-        	username: req.body.username,
-        	password: hashedPassword,
-		email: req.body.email,                                    
-		firstname: req.body.firstname,
-		lastname: req.body.lastname                                                             
-       	 	});
-	
-		//client.close();
+		//Connect to database with mongo db
+			// var MongoClient = require('mongodb').MongoClient;
+			// var url = 'mongodb://localhost';
+		
+			//Hash password
+				bcrypt.hash(plainPassword, saltRounds, function(err, hashedPassword) {
+				// Store hashed password in your database.
+																												
+				// MongoClient.connect(url, function(err, client) {
+				// if (err) throw err;
+				// var db = client.db ('mycaloriesapp');  
+			
+			database.collection('users').insertOne({
+				username: req.body.username,
+				password: hashedPassword,
+			email: req.body.email,                                    
+			firstname: req.body.firstname,
+			lastname: req.body.lastname                                                             
+				});
+		
+			//client.close();
 
-        	res.send( 'Hey, ' + req.body.firstname + ' '+ req.body.lastname + 
-		', You are now registered. ' + 'Your username is '+ req.body.username + 
-		', your email is ' + req.body.email + '<br />'+ 'Your password is '+ req.body.password + 
-		'<br />'+'<a href='+'./'+'>Home</a>');
-        	});
+				res.send( 'Hey, ' + req.body.firstname + ' '+ req.body.lastname + 
+			', You are now registered. ' + 'Your username is '+ req.body.username + 
+			', your email is ' + req.body.email + '<br />'+ 'Your password is '+ req.body.password + 
+			'<br />'+'<a href='+'./'+'>Home</a>');
+				});
     	 }});
     	}});
    }});
